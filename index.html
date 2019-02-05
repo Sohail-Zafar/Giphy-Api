@@ -8,35 +8,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sports Cars</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" /> -->
+
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    
-      <h1>Sports Cars</h1>
+    <div id = "form1">
+      <h1>Cars</h1>
       <form id="Car-form">
       <label for="car-input">Search for a sports car</label>
       <input type="text" id="car-input"><br/>
 
-      <input id="find-car" type="submit" value="Car">
+      <input id="find-car" type="submit" value="Search">
       </form>
-
+      <div id="buttons"></div>
+      <div id="images"></div>
+      </div>
     <script type="text/javascript">
     
+        var arrayOfCarMakers = [ "Acura","Audi", "Bentley", "BMW", "Chevrolet", "Chrysler", "Corvette", "Dodge",
+            "Ferrari", "Fiat", "Honda", "Isuzu", "Lamborghini", "Lotus", "Mazda", "Mercedes Benz", "Nissan", "Toyota", "Volkswagen"];
+            
+        for ( var i = 0; i < arrayOfCarMakers.length; i++) {
+            var $buttons =  $("<button data-maker=" + arrayOfCarMakers[i] + ">"+ arrayOfCarMakers[i] +"</button>");
+            $("#buttons").append($buttons);
+            
+            var carData = $buttons.attr("data-maker");
+         }
+        $("button").on("click", function(event) {
+            var carData = $(this).attr("data-maker");
+            console.log(carData);
+            $("#images").empty();
+            apiSearch(carData);
+        });
+
+
 
     $("#find-car").on("click", function(event) {
-    var car = $("#car-input").val();
-    var queryURL = "http://api.giphy.com/v1/gifs/search?q" + car +"&api_key=3JIIu8SyI539zTyeyj8jyUEpI2XVBILl";
-
-    $.ajax({
-    url: queryURL,
-    method: "GET"
-    }).then(function(response) {
-    console.log(response);
+        event.preventDefault();
+        $("#images").empty();
+        var car = $("#car-input").val();
+        apiSearch(car);
     });
-    });
+    
+    function apiSearch(carSearch) {
 
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + carSearch +"&api_key=3JIIu8SyI539zTyeyj8jyUEpI2XVBILl";
+      
+        $.ajax({
+        url: queryURL,
+        method: "GET"
+        }).then(function(response) {
+        console.log(response);
+    
+        for (var i = 0; i< response.data.length; i++) {
+            var carImage = response.data[i].images.fixed_height.url;
+            var $carImage = $('<img width = 200px height = 100px>').attr('src', carImage);
+            $("#images").append($carImage); }
+    
+        });
+    }
 
-    </script>
+   </script>
 </body>
 </html>
