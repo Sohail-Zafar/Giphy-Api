@@ -8,49 +8,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sports Cars</title>
+    <style>
+        .flex-container {
+        display: flex;
+        flex-direction: row;
+        }
     
+    </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
    
-    <!-- Form input  -->
-    <div id = "form1">
-      <h1>Cars</h1>
-      <form id="Car-form">
-      <label for="car-input">Search for a sports car</label>
-      <input type="text" id="car-input"><br/>
-
-      <input id="find-car" type="submit" value="Search">
-      </form>
+    
       <div id="buttons"></div>
-      <div id="images"></div>
-      </div>
+
+       <!-- Form input  -->
+        <div id = "form1">
+        <h1>Cars</h1>
+        <form id="Car-form">
+        <label for="car-input">Search for a sports car</label>
+        <input type="text" id="car-input"><br/>
+        <input id="find-car" type="submit" value="Search">
+        </form>
+        </div>
+        <div id="carMaker"></div>
+        <div class="flex-container">
+        <div id="imagesAndRating"></div>
+        </div>
     <script type="text/javascript">
     // Array of car makers
         var arrayOfCarMakers = [ "Acura","Audi", "Bentley", "BMW", "Chevrolet", "Chrysler", "Corvette", "Dodge",
-            "Ferrari", "Fiat", "Honda", "Isuzu", "Lamborghini", "Lotus", "Mazda", "Mercedes Benz", "Nissan", "Toyota", "Volkswagen"];
+            "Ferrari", "Fiat", "Honda", "Isuzu", "Lamborghini", "Lotus", "Mazda", "Mercedes Benz", "Nissan", "Toyota",
+             "Volkswagen"];
     
-       // buttons of car makers
-        for ( var i = 0; i < arrayOfCarMakers.length; i++) {
-            var $buttons =  $("<button data-maker=" + arrayOfCarMakers[i] + ">"+ arrayOfCarMakers[i] +"</button>");
-            $("#buttons").append($buttons);
-            
-            var carData = $buttons.attr("data-maker");
-         }
-        //  on click button function for array of car makers
-        $("button").on("click", function(event) {
-            var carData = $(this).attr("data-maker");
-            console.log(carData);
-            $("#images").empty();
-            apiSearch(carData);
-        });
-
+        buttonMaker();
+           
 
     // Search for car makers that the user has entered
     $("#find-car").on("click", function(event) {
         event.preventDefault();
-        $("#images").empty();
-        var car = $("#car-input").val();
+        $("#imagesAndRating").empty();
+        var car = $("#car-input").val().trim();
+        arrayOfCarMakers.push(car);
+        buttonMaker();
         apiSearch(car);
     });
     
@@ -66,14 +66,70 @@
         console.log(response);
     
     //  Load images from data collected of the GIPHY API
-        for (var i = 0; i< response.data.length; i++) {
-            var carImage = response.data[i].images.fixed_height.url;
-            var $carImage = $('<img width = 200px height = 100px>').attr('src', carImage);
-            $("#images").append($carImage); }
-    
+        for (var i = 0; i< 10; i++) {
+            var carImageAnimated = response.data[i].images.fixed_height.url;
+            var carImageStill = response.data[i].images.fixed_height_still.url;
+   
+            var $gifDiv = $('<div>');
+            var $carImage = $('<img width = 200px height = 100px>');
+            var $rating = response.data[i].rating;
+            
+            console.log(response.data[i].rating);
+            console.log(response[i]);
+            
+            var ratingText = $('<b>').text("Rating: " + $rating);
+            
+            $carImage.attr("src", carImageStill);
+            $carImage.attr("data-still", carImageStill);
+            $carImage.attr("data-animate", carImageAnimated);
+            $carImage.attr("data-state", "still");
+            $carImage.addClass("carImages");
+
+            $gifDiv.append(ratingText);
+            $gifDiv.append($carImage);
+            $("#imagesAndRating").append($gifDiv);
+        }
+            onClickEventPlayStillOrAnimate();
         });
     }
-
+      // buttons of car makers
+    function buttonMaker(){
+      $("#buttons").empty();
+      for ( var i = 0; i < arrayOfCarMakers.length; i++) {
+            var $buttons =  $("<button data-maker=" + arrayOfCarMakers[i] + ">"+ arrayOfCarMakers[i] +"</button>");
+            $("#buttons").append($buttons);
+            var carData = $buttons.attr("data-maker");
+         }
+    
+      //  on click button function for array of car makers
+      $("button").on("click", function(event) {
+            var carData = $(this).attr("data-maker");
+            console.log(carData);
+            $("#carMaker").empty();
+            $("#carMaker").text(carData);
+            $("#imagesAndRating").empty();
+            apiSearch(carData);
+        });
+    }
+    
+    
+    function onClickEventPlayStillOrAnimate() {
+        $(".carImages").on("click", function(event) {
+            event.preventDefault();
+            var dataState = $(this).attr("data-state");
+            if (dataState === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+            }
+    });
+        }
+         
+     
    </script>
+
+           
 </body>
 </html>
