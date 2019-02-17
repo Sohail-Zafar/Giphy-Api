@@ -1,6 +1,7 @@
 <!-- Assignment: Giphy API -->
 <!-- File: index.html -->
 <!-- Programmer: Sohail Zafar -->
+<!-- This application has be redone. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,17 +10,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sports Cars</title>
     <style>
-        .flex-container {
-        display: flex;
-        flex-direction: row;
+        .displayInline {
+            display: inline-block;
+            width: 210px;
+            height: 110px;
+            margin: 1em;
         }
-    
     </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-   
-    
+       
       <div id="buttons"></div>
 
        <!-- Form input  -->
@@ -31,10 +32,12 @@
         <input id="find-car" type="submit" value="Search">
         </form>
         </div>
+        <!-- Divs for carmaker, rating and images -->
         <div id="carMaker"></div>
-        <div class="flex-container">
-        <div id="imagesAndRating"></div>
-        </div>
+            <div class="displayInline">
+                <div id="imagesAndRating"></div>
+            </div>
+
     <script type="text/javascript">
     // Array of car makers
         var arrayOfCarMakers = [ "Acura","Audi", "Bentley", "BMW", "Chevrolet", "Chrysler", "Corvette", "Dodge",
@@ -65,34 +68,40 @@
         }).then(function(response) {
         console.log(response);
     
-    //  Load images from data collected of the GIPHY API
+        //  Load images and ratings from data collected of the GIPHY API
         for (var i = 0; i< 10; i++) {
             var carImageAnimated = response.data[i].images.fixed_height.url;
             var carImageStill = response.data[i].images.fixed_height_still.url;
-   
+            
+            // Dynamically generated <div> and <img> to hold images and ratings.
             var $gifDiv = $('<div>');
             var $carImage = $('<img width = 200px height = 100px>');
             var $rating = response.data[i].rating;
             
+            // Console log the rating for testing.
             console.log(response.data[i].rating);
             console.log(response[i]);
             
+            // Varible to hold rating data.
             var ratingText = $('<b>').text("Rating: " + $rating);
             
+            // Set data attributes to the $carImage varible. 
             $carImage.attr("src", carImageStill);
             $carImage.attr("data-still", carImageStill);
             $carImage.attr("data-animate", carImageAnimated);
             $carImage.attr("data-state", "still");
             $carImage.addClass("carImages");
-
+            
+            // Place $gifDiv into #imagesAndRating div.
             $gifDiv.append(ratingText);
             $gifDiv.append($carImage);
             $("#imagesAndRating").append($gifDiv);
         }
+
             onClickEventPlayStillOrAnimate();
         });
     }
-      // buttons of car makers
+      // buttons of car makers dynamically generated from array.
     function buttonMaker(){
       $("#buttons").empty();
       for ( var i = 0; i < arrayOfCarMakers.length; i++) {
@@ -112,7 +121,7 @@
         });
     }
     
-    
+    // On click function to display still or animated image.
     function onClickEventPlayStillOrAnimate() {
         $(".carImages").on("click", function(event) {
             event.preventDefault();
@@ -124,12 +133,8 @@
                 $(this).attr("src", $(this).attr("data-still"));
                 $(this).attr("data-state", "still");
             }
-    });
-        }
-         
-     
-   </script>
-
-           
+        });
+    }
+     </script>          
 </body>
 </html>
